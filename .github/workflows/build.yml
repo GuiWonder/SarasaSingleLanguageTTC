@@ -1,0 +1,56 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check
+      run: python3 check.py $GITHUB_ENV
+
+    - name: Install afdko
+      if: env.hasnew == 'true'
+      run: pip3 install afdko
+
+    - name: Build
+      if: env.hasnew == 'true'
+      run: python3 build.py
+
+    - name: Upload to release
+      if: env.hasnew == 'true'
+      uses: ncipollo/release-action@v1
+      with:
+        token: "${{ secrets.GITHUB_TOKEN }}"
+        tag: "${{ env.version }}"
+        artifacts: "*.7z"
+        allowUpdates: true
+        prerelease: false
+        draft: false
+        name: "Sarasa Gothic TTC ${{ env.version }}"
+        body: "Single language TTC for Sarasa Gothic ${{ env.version }}."
+
+    - name: Commit Files
+      if: env.hasnew == 'true'
+      run: |
+        git config user.email "55447192+GuiWonder@users.noreply.github.com"
+        git config user.name "Owner"
+        git add *.md
+        git commit -m "new version"
+        git push origin main
+
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 0
+          
