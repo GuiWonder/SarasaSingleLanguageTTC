@@ -90,7 +90,7 @@ def rettc(loctg, hint):
 	os.system(f'7z a ./Sarasa{loctg}-TTC-{hint}{rlsver}.7z ./*.ttc -mx=9 -mfb=256 -md=512m')
 
 	for item in os.listdir('./'):
-		if item.lower().split('.')[-1] in ['ttc', 'ttf', '.otf']:
+		if item.lower().split('.')[-1] in ['ttc', 'ttf', 'otf']:
 			os.remove(item)
 
 def build():
