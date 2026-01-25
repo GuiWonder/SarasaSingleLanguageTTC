@@ -8,14 +8,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v4
     - name: Check
       run: python3 check.py $GITHUB_ENV
 
-    - name: Install afdko
+    - name: Install fonttools
       if: env.hasnew == 'true'
-      run: pip3 install afdko
+      run: pip3 install fonttools
 
     - name: Build
       if: env.hasnew == 'true'
@@ -53,4 +55,3 @@ jobs:
           repository: ${{ github.repository }}
           retain_days: 0
           keep_minimum_runs: 0
-          
